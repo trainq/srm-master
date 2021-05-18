@@ -1,0 +1,22 @@
+server:
+  port: 9000
+spring:
+  application:
+    name: gateway-server
+  cloud:
+    gateway:
+      routes:
+        - id: srm-system-server
+          uri: lb://srm-system-server
+          predicates:
+            - Path=/srm/sys/**
+        - id: srm-auth-server
+          uri: lb://srm-auth-server
+          predicates:
+            - Path=/srm/auth/**
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8000/eureka
+  instance:
+    instance-id: gateway-sever

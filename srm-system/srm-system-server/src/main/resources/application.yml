@@ -1,0 +1,26 @@
+server:
+  port: 8002
+  servlet:
+    context-path: /srm/sys
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8000/eureka
+  instance:
+    instance-id: srm-system-server
+spring:
+  application:
+    name: srm-system-server
+  profiles:
+    active: dev
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+
+mybatis-plus:
+  global-config:
+    banner: false
+    db-config:
+      id-type: auto
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
