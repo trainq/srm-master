@@ -4,9 +4,11 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONUtil;
 import cn.xuchao.AuthApi;
 import cn.xuchao.constant.SecurityConstant;
+import cn.xuchao.exception.PermissionDeniedException;
+import cn.xuchao.exception.TokenExpireException;
+import cn.xuchao.exception.TokenNotFoundException;
 import cn.xuchao.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
-import netscape.security.ForbiddenTargetException;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -16,7 +18,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
-import javax.security.auth.login.CredentialExpiredException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -46,16 +47,18 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         if (Arrays.stream(ignoreUrl).noneMatch(Predicate.isEqual(rawPath))) {
             List<String> tokens = request.getHeaders().get(SecurityConstant.TOKEN_KEY);
             if (CollectionUtil.isEmpty(tokens)) {
-                return Mono.error(new CredentialExpiredException());
+                return Mono.error(new TokenNotFoundException());
             }
             String token = tokens.get(0);
             Object o = redisUtil.get(SecurityConstant.ONLINE_PREFIX + token);
+            if (o == null) {
+                return Mono.error(new TokenExpireException());
+            }
             Set<String> urlList = JSONUtil.parseObj(o).getJSONArray("menuList").stream().map(menu -> JSONUtil.parseObj(menu).get("url").toString()).collect(Collectors.toSet());
             if (!urlList.contains(rawPath)) {
-                return Mono.error(new ForbiddenTargetException());
+                return Mono.error(new PermissionDeniedException());
             }
         }
-        //todo 校验token
         return chain.filter(exchange);
     }
 
