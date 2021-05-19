@@ -10,9 +10,9 @@
     <modules>
         <module>eureka-server</module>
         <module>srm-common</module>
-        <module>srm-system</module>
         <module>gateway-server</module>
         <module>srm-auth</module>
+        <module>srm-material</module>
     </modules>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
