@@ -1,7 +1,8 @@
 package cn.xuchao.dto;
 
-import cn.xuchao.entity.User;
 import lombok.Data;
+import lombok.experimental.Accessors;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.util.List;
@@ -10,10 +11,35 @@ import java.util.List;
  * @author xkhy
  */
 @Data
-public class SecurityUser implements Serializable {
+@Accessors(chain = true)
+public class SecurityUser implements Serializable, UserDetails {
 
-    private User user;
+    private Long userId;
 
-    private List<String> permission;
+    private String username;
+
+    private String password;
+
+    private List<Authority> authorities;
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 
 }

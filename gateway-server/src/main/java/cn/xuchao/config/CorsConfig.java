@@ -18,9 +18,9 @@ public class CorsConfig {
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedMethod("");
-        configuration.addAllowedOrigin("");
-        configuration.addAllowedHeader("");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedOrigin("*");
+        configuration.addAllowedHeader("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource(new PathPatternParser());
         source.registerCorsConfiguration("/**", configuration);
         return new CorsWebFilter(source);

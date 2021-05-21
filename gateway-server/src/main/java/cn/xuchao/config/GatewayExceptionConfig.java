@@ -17,7 +17,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.web.reactive.result.view.ViewResolver;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +34,7 @@ public class GatewayExceptionConfig {
     @Order(-1)
     public ErrorWebExceptionHandler errorWebExceptionHandler(ErrorAttributes errorAttributes, ResourceProperties resourceProperties, ObjectProvider<ViewResolver> viewResolvers, ServerCodecConfigurer serverCodecConfigurer, ApplicationContext applicationContext) {
         GatewayExceptionHandler exceptionHandler = new GatewayExceptionHandler(errorAttributes, resourceProperties, this.serverProperties.getError(), applicationContext);
-        exceptionHandler.setViewResolvers((List) viewResolvers.orderedStream().collect(Collectors.toList()));
+        exceptionHandler.setViewResolvers(viewResolvers.orderedStream().collect(Collectors.toList()));
         exceptionHandler.setMessageWriters(serverCodecConfigurer.getWriters());
         exceptionHandler.setMessageReaders(serverCodecConfigurer.getReaders());
         return exceptionHandler;

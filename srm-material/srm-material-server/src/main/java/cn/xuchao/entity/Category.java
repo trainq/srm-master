@@ -19,6 +19,8 @@ public class Category extends BaseEntity {
     @TableId
     private Long categoryId;
 
+    private String name;
+
     private Long parentId;
 
     private Integer level;

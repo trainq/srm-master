@@ -31,8 +31,6 @@ public class User extends BaseEntity {
     private String phone;
 
     private boolean isAdmin;
-
-    private Long platformId ;
     @JsonIgnore
     private String salt;
 

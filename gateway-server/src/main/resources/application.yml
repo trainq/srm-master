@@ -6,14 +6,19 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: srm-system-server
-          uri: lb://srm-system-server
+        - id: srm-material-server
+          uri: lb://srm-material-server
           predicates:
-            - Path=/srm/sys/**
+            - Path=/srm/material/**
         - id: srm-auth-server
           uri: lb://srm-auth-server
           predicates:
             - Path=/srm/auth/**
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 1
 eureka:
   client:
     service-url:

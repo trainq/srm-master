@@ -1,6 +1,7 @@
 package cn.xuchao.service.impl;
 
 import cn.xuchao.entity.Category;
+import cn.xuchao.exception.ParentNotExistException;
 import cn.xuchao.mapper.CategoryMapper;
 import cn.xuchao.request.CategorySaveRequest;
 import cn.xuchao.service.CategoryService;
@@ -21,13 +22,17 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         if (request.getParentId() == null) {
             category.setParentId(0L)
                     .setLevel(1);
-        }else{
+        } else {
             Category parent = getOne(new QueryWrapper<Category>().eq(Category.CATEGORY_ID, request.getParentId()));
-            if(parent == null){
-
+            if (parent == null) {
+                throw new ParentNotExistException();
             }
+            category.setParentId(parent.getCategoryId())
+                    .setLevel(parent.getLevel() + 1);
         }
-        return null;
+        /*其他*/
+        category.setName(request.getName()).setRemark(request.getRemark()).setIsLeaf(request.getIsLeaf());
+        return save(category);
     }
 
 }

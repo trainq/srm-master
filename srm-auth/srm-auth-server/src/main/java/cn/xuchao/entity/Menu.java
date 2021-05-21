@@ -25,8 +25,6 @@ public class Menu extends BaseEntity {
 
     private String url;
 
-    private String perms;
-
     private String icon;
 
     private Integer orderNum;
