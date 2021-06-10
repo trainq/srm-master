@@ -32,9 +32,6 @@ public class Oauth2Config extends AuthorizationServerConfigurerAdapter {
     @Resource
     private UserDetailsService userServiceImpl;
 
-    /*@Resource
-    private ClientDetailsService clientServiceImpl;*/
-
     @Resource
     private DataSource dataSource;
 
@@ -51,7 +48,6 @@ public class Oauth2Config extends AuthorizationServerConfigurerAdapter {
 
     @Bean
     public ClientDetailsService jdbcClientDetailsService(DataSource dataSource) {
-
         return new JdbcClientDetailsService(dataSource);
     }
 
@@ -93,7 +89,9 @@ public class Oauth2Config extends AuthorizationServerConfigurerAdapter {
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer securityConfigurer) {
+        //允许客户端访问oauth2授权接口
         securityConfigurer.allowFormAuthenticationForClients();
+        //允许已授权用户访问checkToken 和 获取token 的接口
         securityConfigurer.checkTokenAccess("isAuthenticated()");
         securityConfigurer.tokenKeyAccess("isAuthenticated()");
     }

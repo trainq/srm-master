@@ -2,6 +2,7 @@ package cn.xuchao.filter;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import cn.xuchao.constant.SecurityConstant;
 import cn.xuchao.exception.PermissionDeniedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -19,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.Arrays;
 
 /**
  * @author xkhy
@@ -27,11 +29,13 @@ import java.net.URI;
 @Slf4j
 public class AccessGatewayFilter implements GlobalFilter, Ordered {
 
+    private final static String[] IGNORE_URL = {"/srm/auth/oauth/token","/srm/auth/oauth/check_token","/srm/auth/oauth/authorize"};
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         String url = request.getPath().value();
-        if (!url.startsWith("/srm/auth/")) {
+        if (!Arrays.asList(IGNORE_URL).contains(url)) {
             try {
                 boolean accessible = accessible(request);
                 if (!accessible) {
@@ -50,19 +54,17 @@ public class AccessGatewayFilter implements GlobalFilter, Ordered {
     }
 
     private boolean accessible(ServerHttpRequest request) throws HttpClientErrorException {
-        String token = request.getHeaders().getFirst("token");
+        String token = request.getHeaders().getFirst(SecurityConstant.TOKEN_KEY);
         //todo 修改为feign调用
         URI uri = UriComponentsBuilder.fromHttpUrl("http://localhost:8001/srm/auth/oauth/check_token").queryParam("token", token).build().encode().toUri();
         HttpEntity<?> entity = new HttpEntity<>(request.getHeaders());
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
         JSONObject resObject = JSONUtil.parseObj(responseEntity.getBody());
-        log.info(JSONUtil.toJsonStr(responseEntity));
         boolean active = (boolean) resObject.get("active");
         if (!active) {
             //todo not active handler
         }
-        log.info(request.getPath().value());
         return resObject.getJSONArray("authorities").stream().anyMatch(authority -> authority.toString().equals(request.getPath().value()));
     }
 
